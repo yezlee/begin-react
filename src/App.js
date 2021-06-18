@@ -1,25 +1,19 @@
 import { black } from "chalk";
 import Hello from "./Hello.js";
-import "./App.css";
+import Wrapper from "./Wrapper.js";
 
 function App() {
-  const name = "react";
-  const style = {
-    backgroundColor: "black",
-    color: "aqua",
-    fontSize: 24,
-    padding: "1rem",
-  };
   return (
-    <>
-      {/* How to comment out */}
-      <Hello
-      // this is possible as well but only inside tag
-      />
-      <div style={style}>{name}</div>
-      <div className="gray-box"></div>
-    </>
+    <Wrapper>
+      <Hello name="react" color="red" />
+      <Hello color="pink" />
+    </Wrapper>
   );
 }
 
 export default App;
+
+// App.js에서 우리가 Hello 컴포넌트한테 넣어준 name, color 이게 바로 props이다.
+// 그러면 Hello 컴포넌트는 props라는 값을 파라미터를 통해서 받을수 있다
+
+// Wrapper에서는 children이라는 props를 사용했는데, App.js에 <Wrapper>태그 안에 있는 내용을 의미하는게 바로 children이다.
