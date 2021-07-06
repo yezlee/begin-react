@@ -66,6 +66,11 @@ function App() {
     // 컴포넌트가 리렌더링돼도 기억하고 싶은 값이 있을때도 useRef를 쓴다.
   };
 
+  const onRemove = (id) => {
+    setUsers(users.filter((user) => user.id !== id));
+    //설명 : 파라미터로 id가 3인애가 들어왔어, users.filter해서 user를 파라미터로 받아서, user.id가 파라미터로 들어온 아이디3이랑 일치한지 보는거야. 그럼 아이디 1,2는 3이 아니니까 트루가 되서 그 두개만 들어있는 배열이 새로 만들어짐. 그 배열을 setUsers에 담으면 users배열이 새롭게 없데이트가 되는거지.
+  };
+
   return (
     <>
       <CreateUser
@@ -74,8 +79,8 @@ function App() {
         onChange={onChange}
         onCreate={onCreate}
       />
-      <UserList users={users} />
-      {/* 이렇게 하면 위에 적은 users를 UserList 컴포넌트에 전달하는 것임 */}
+      <UserList users={users} onRemove={onRemove} />
+      {/* 이렇게 하면 위에 적은 배열 users를 - useState()로 추출함(users 도 useState 를 사용하여 컴포넌트의 상태로서 관리해주세요.) - UserList 컴포넌트에 전달하는 것임 */}
     </>
   );
 }

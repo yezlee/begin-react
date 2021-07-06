@@ -2,15 +2,22 @@ import React from "react";
 
 // 하나의 파일안에 여러개의 컴포넌트가 들어가도 상관없다.
 
-function User({ user }) {
+function User({ user, onRemove }) {
+  const { username, email, id } = user;
   return (
     <div>
-      <b>{user.username}</b> <span>({user.email})</span>
+      <b>{username}</b> <span>({email})</span>
+      <button onClick={() => onRemove(id)}>Delete</button>
+      {/* 설명 : 온클릭에서 새로운 함수를 만드는게 헷갈릴수도 있는데, 위 버튼이 눌렀을 때, 함수를 호출할 것이다. 이 함수에서는 props로 받아온 onRemove를 id값을 파라미터로 넣어서 호출을 해 줄거다.   
+      <button onClick={onRemove(id)}>Delete</button>
+      이렇게 하면 안돼!! -> 이러면 렌더링 되는 순간 onRemove함수가 호출되면서 즉 렌더링 되면서 모든 userlist가 사라짐.
+      우선 온클릭쪽에 새로운 함수를 하나 만들어주고 () , 해당 함수에서 onRemove에 id값을 넣어서 호출하도록 설정을 함.
+      */}
     </div>
   );
 }
 
-function UserList({ users }) {
+function UserList({ users, onRemove }) {
   /*
     원래 여기에 이거 있었는데 useRef사용하려고 이거 app.js로 이동
       const users = [
@@ -45,7 +52,7 @@ function UserList({ users }) {
     */
     <div>
       {users.map((user) => (
-        <User user={user} key={user.id} />
+        <User user={user} key={user.id} onRemove={onRemove} />
       ))}
     </div>
 
