@@ -2,6 +2,11 @@ import React, { useRef, useState } from "react";
 import CreateUser from "./CreateUser";
 import UserList from "./UserList";
 
+// 복습 :
+// 배열안에 있는 값을 추가하거나 제거, 수정해야할 때
+// onCreate에서는 spread operator / concat function을 사용
+// onRemove에서는 filter function을 사용
+// 특정값만 업데이트 할 때에는, onToggle에서는, map함수를 사용하면 되겠다.
 function App() {
   const [inputs, setInputs] = useState({
     username: "",
@@ -22,16 +27,19 @@ function App() {
       id: 1,
       username: "velopert",
       email: "public.velopert@gmail.com",
+      active: true,
     },
     {
       id: 2,
       username: "heemong",
       email: "heemong9@gmail.com",
+      active: false,
     },
     {
       id: 3,
       username: "devyez",
       email: "dev.yezlee@gmail.com",
+      active: false,
     },
   ]);
 
@@ -71,6 +79,16 @@ function App() {
     //설명 : 파라미터로 id가 3인애가 들어왔어, users.filter해서 user를 파라미터로 받아서, user.id가 파라미터로 들어온 아이디3이랑 일치한지 보는거야. 그럼 아이디 1,2는 3이 아니니까 트루가 되서 그 두개만 들어있는 배열이 새로 만들어짐. 그 배열을 setUsers에 담으면 users배열이 새롭게 없데이트가 되는거지.
   };
 
+  const onToggle = (id) => {
+    setUsers(
+      users.map((user) =>
+        user.id === id ? { ...user, active: !user.active } : user
+      )
+    );
+  };
+  // 이렇게 배열안에 이쓴ㄴ 원소를 업데이트 할 때는 map함수를 사용해서 구현할 수 있다
+  // 또 특정 객체를 업데이트 할 때도, { ...user, active: !user.active } 이렇게 기존의 유저를 수정하는게 아니라 새로운 객체를 만드는거!!! 만들어서 원래 기존에 user가 갖고있던 값을 넣어주고  {...user}, 나서 특정 값을 덮어 씌워 주는 형태로 active: !user.active - 이렇게!
+  // 이게 불변성을 유지하는 거야.
   return (
     <>
       <CreateUser
@@ -79,7 +97,7 @@ function App() {
         onChange={onChange}
         onCreate={onCreate}
       />
-      <UserList users={users} onRemove={onRemove} />
+      <UserList users={users} onRemove={onRemove} onToggle={onToggle} />
       {/* 이렇게 하면 위에 적은 배열 users를 - useState()로 추출함(users 도 useState 를 사용하여 컴포넌트의 상태로서 관리해주세요.) - UserList 컴포넌트에 전달하는 것임 */}
     </>
   );

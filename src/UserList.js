@@ -2,11 +2,20 @@ import React from "react";
 
 // 하나의 파일안에 여러개의 컴포넌트가 들어가도 상관없다.
 
-function User({ user, onRemove }) {
-  const { username, email, id } = user;
+function User({ user, onRemove, onToggle }) {
+  const { username, email, id, active } = user;
   return (
     <div>
-      <b>{username}</b> <span>({email})</span>
+      <b
+        style={{
+          color: active ? "green" : "black",
+          cursor: "pointer",
+        }}
+        onClick={() => onToggle(id)}
+      >
+        {username}
+      </b>{" "}
+      <span>({email})</span>
       <button onClick={() => onRemove(id)}>Delete</button>
       {/* 설명 : 온클릭에서 새로운 함수를 만드는게 헷갈릴수도 있는데, 위 버튼이 눌렀을 때, 함수를 호출할 것이다. 이 함수에서는 props로 받아온 onRemove를 id값을 파라미터로 넣어서 호출을 해 줄거다.   
       <button onClick={onRemove(id)}>Delete</button>
@@ -17,7 +26,7 @@ function User({ user, onRemove }) {
   );
 }
 
-function UserList({ users, onRemove }) {
+function UserList({ users, onRemove, onToggle }) {
   /*
     원래 여기에 이거 있었는데 useRef사용하려고 이거 app.js로 이동
       const users = [
@@ -52,7 +61,12 @@ function UserList({ users, onRemove }) {
     */
     <div>
       {users.map((user) => (
-        <User user={user} key={user.id} onRemove={onRemove} />
+        <User
+          user={user}
+          key={user.id}
+          onRemove={onRemove}
+          onToggle={onToggle}
+        />
       ))}
     </div>
 
