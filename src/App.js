@@ -70,9 +70,9 @@ function App() {
       username,
       email,
     };
-    setUsers([...users, user]);
+    // setUsers([...users, user]);
     // 위에처럼 spread 문법말고 concat 문법을 써도 됨. push는 안돼!!!! spread or concat 이거 둘중하나만.
-    // setUsers(users.concat(user)); 결과는 같다.
+    setUsers((users) => users.concat(user)); // 결과는 같다.
 
     setInputs({
       username: "",
@@ -89,26 +89,20 @@ function App() {
 
     // 정리 : useRef는 특정 돔을 선택할 떄도 ref속성을? 이용해서 사용할 수도 있지만,
     // 컴포넌트가 리렌더링돼도 기억하고 싶은 값이 있을때도 useRef를 쓴다.
-  }, [username, email, users]); // 만약 여기 dependency에 넣어주지 않으면 함수에서 해당 상태들을 참조할때 제일 최신버전을 참조하는게 아니고 처음 생성할때의 상태를 참조하게 된다.
+  }, [username, email]); // 만약 여기 dependency에 넣어주지 않으면 함수에서 해당 상태들을 참조할때 제일 최신버전을 참조하는게 아니고 처음 생성할때의 상태를 참조하게 된다.
 
-  const onRemove = useCallback(
-    (id) => {
-      setUsers(users.filter((user) => user.id !== id));
-      //설명 : 파라미터로 id가 3인애가 들어왔어, users.filter해서 user를 파라미터로 받아서, user.id가 파라미터로 들어온 아이디3이랑 일치한지 보는거야. 그럼 아이디 1,2는 3이 아니니까 트루가 되서 그 두개만 들어있는 배열이 새로 만들어짐. 그 배열을 setUsers에 담으면 users배열이 새롭게 없데이트가 되는거지.
-    },
-    [users]
-  );
+  const onRemove = useCallback((id) => {
+    setUsers((users) => users.filter((user) => user.id !== id));
+    //설명 : 파라미터로 id가 3인애가 들어왔어, users.filter해서 user를 파라미터로 받아서, user.id가 파라미터로 들어온 아이디3이랑 일치한지 보는거야. 그럼 아이디 1,2는 3이 아니니까 트루가 되서 그 두개만 들어있는 배열이 새로 만들어짐. 그 배열을 setUsers에 담으면 users배열이 새롭게 없데이트가 되는거지.
+  }, []);
 
-  const onToggle = useCallback(
-    (id) => {
-      setUsers(
-        users.map((user) =>
-          user.id === id ? { ...user, active: !user.active } : user
-        )
-      );
-    },
-    [users]
-  );
+  const onToggle = useCallback((id) => {
+    setUsers((users) =>
+      users.map((user) =>
+        user.id === id ? { ...user, active: !user.active } : user
+      )
+    );
+  }, []);
   // 이렇게 배열안에 있는 원소를 업데이트 할 때는 map함수를 사용해서 구현할 수 있다
   // 또 특정 객체를 업데이트 할 때도, { ...user, active: !user.active } 이렇게 기존의 유저를 수정하는게 아니라 새로운 객체를 만드는거!!! 만들어서 원래 기존에 user가 갖고있던 값을 넣어주고  {...user}, 나서 특정 값을 덮어 씌워 주는 형태로 active: !user.active - 이렇게!
   // 이게 불변성을 유지하는 거야.

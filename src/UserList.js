@@ -2,8 +2,10 @@ import React, { useEffect } from "react";
 
 // 하나의 파일안에 여러개의 컴포넌트가 들어가도 상관없다.
 
-function User({ user, onRemove, onToggle }) {
+const User = React.memo(function User({ user, onRemove, onToggle }) {
   const { username, email, id, active } = user;
+
+  /*
   useEffect(() => {
     console.log("user 값이 설정됨");
     console.log(user);
@@ -14,7 +16,7 @@ function User({ user, onRemove, onToggle }) {
   }, [user]); // 이렇게 하면 user값이 설정될때마다 즉 렌더링 되거나(마운팅되거나) 변경(업데이트)되거나 변화가 있은 직후에 실행이 된다.
   // 또, 만약에 useEffect에 등록된 함수에서 props로 받아온 값을 참조하거나 useState로 관리하고 있는 값을 참조한다면 deps 배열에 꼭 넣어주어야 한다. 안 넣어도 오류가 나거나 그러지는 않는데, 경고가 나타날 수 있음
   // 넣어주어야지 첫번째 파라미터에서 사용한 user가 최신 값을 가리키게 된다.
-  /*
+ 
     console.log("컴포넌트가 화면에 나타남");
     // 컴포넌트가 마운트 될때 주로 추가하는 작업이 뭐가 있냐면,
     // props -> state 예를 들어 props로 받은 값을 컴포넌트의 state로 설정
@@ -61,7 +63,7 @@ function User({ user, onRemove, onToggle }) {
       */}
     </div>
   );
-}
+});
 
 function UserList({ users, onRemove, onToggle }) {
   /*
@@ -137,7 +139,10 @@ function UserList({ users, onRemove, onToggle }) {
   );
 }
 
-export default UserList;
+export default React.memo(
+  UserList,
+  (prevProps, nextProps) => nextProps.users === prevProps.users
+);
 
 /*
 useRef로 컴포넌트 안의 변수 만들기
