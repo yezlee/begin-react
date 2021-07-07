@@ -1,4 +1,4 @@
-import React, { useRef, useState, useMemo } from "react";
+import React, { useRef, useState, useMemo, useCallback } from "react";
 import CreateUser from "./CreateUser";
 import UserList from "./UserList";
 
@@ -18,13 +18,25 @@ function App() {
     email: "",
   });
   const { username, email } = inputs;
-  const onChange = (e) => {
-    const { name, value } = e.target;
-    setInputs({
-      ...inputs,
-      [name]: value,
-    });
-  };
+  // const onChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setInputs({
+  //     ...inputs,
+  //     [name]: value,
+  //   });
+  // };
+  // 위와 같이 매번 함수를 선언한다고 해서 속도가 느려지지는 않지만, 아래 UserList같은 컴포넌트들의 props가 변경 되지 않는다면 리렌더링 - virture dom이 하는 리렌더링 조차 하지 않아도 되는데. 그래서 이전에 만든 함수를 재사용할수있게끔. 하는게 ==> useCallback
+  const onChange = useCallback(
+    (e) => {
+      const { name, value } = e.target;
+      setInputs({
+        ...inputs,
+        [name]: value,
+      });
+    },
+    [inputs] // useCallback을 쓰려면 우선 onChange함수안에 있는 애들을 감싸주고, 내부에서 애들이 의존하고 있는 값들이 있나 봐야함. 보면 inputs가 useState를 통해서 관리가 되어지고 있지. 그래서 inputs를 두번째 파라미터인 deps 배열에 넣어주면 된다.
+    // 그러면 onChange함수는 inputs의 값이 바뀔때만 함수가 새롭게 , 그렇지 않다면 기존에 있는 함수를 재사용하게 되는것.
+  );
 
   // 이렇게 useState로 감싸주면, 즉 바깥으로 빼주면 밖에서도 이걸 쓸수 있게 해주는것임.. (? 근데 원래도 썼던게..아닌가..)
   const [users, setUsers] = useState([
@@ -52,7 +64,7 @@ function App() {
   // 위에 아이디가 3까지 있으니까 4로 해주고
   // 담에 또 새로운 아이디, nextId가 생기는거를 위해서 함수를 만들거
 
-  const onCreate = () => {
+  const onCreate = useCallback(() => {
     const user = {
       id: nextId.current,
       username,
@@ -77,20 +89,26 @@ function App() {
 
     // 정리 : useRef는 특정 돔을 선택할 떄도 ref속성을? 이용해서 사용할 수도 있지만,
     // 컴포넌트가 리렌더링돼도 기억하고 싶은 값이 있을때도 useRef를 쓴다.
-  };
+  }, [username, email, users]); // 만약 여기 dependency에 넣어주지 않으면 함수에서 해당 상태들을 참조할때 제일 최신버전을 참조하는게 아니고 처음 생성할때의 상태를 참조하게 된다.
 
-  const onRemove = (id) => {
-    setUsers(users.filter((user) => user.id !== id));
-    //설명 : 파라미터로 id가 3인애가 들어왔어, users.filter해서 user를 파라미터로 받아서, user.id가 파라미터로 들어온 아이디3이랑 일치한지 보는거야. 그럼 아이디 1,2는 3이 아니니까 트루가 되서 그 두개만 들어있는 배열이 새로 만들어짐. 그 배열을 setUsers에 담으면 users배열이 새롭게 없데이트가 되는거지.
-  };
+  const onRemove = useCallback(
+    (id) => {
+      setUsers(users.filter((user) => user.id !== id));
+      //설명 : 파라미터로 id가 3인애가 들어왔어, users.filter해서 user를 파라미터로 받아서, user.id가 파라미터로 들어온 아이디3이랑 일치한지 보는거야. 그럼 아이디 1,2는 3이 아니니까 트루가 되서 그 두개만 들어있는 배열이 새로 만들어짐. 그 배열을 setUsers에 담으면 users배열이 새롭게 없데이트가 되는거지.
+    },
+    [users]
+  );
 
-  const onToggle = (id) => {
-    setUsers(
-      users.map((user) =>
-        user.id === id ? { ...user, active: !user.active } : user
-      )
-    );
-  };
+  const onToggle = useCallback(
+    (id) => {
+      setUsers(
+        users.map((user) =>
+          user.id === id ? { ...user, active: !user.active } : user
+        )
+      );
+    },
+    [users]
+  );
   // 이렇게 배열안에 있는 원소를 업데이트 할 때는 map함수를 사용해서 구현할 수 있다
   // 또 특정 객체를 업데이트 할 때도, { ...user, active: !user.active } 이렇게 기존의 유저를 수정하는게 아니라 새로운 객체를 만드는거!!! 만들어서 원래 기존에 user가 갖고있던 값을 넣어주고  {...user}, 나서 특정 값을 덮어 씌워 주는 형태로 active: !user.active - 이렇게!
   // 이게 불변성을 유지하는 거야.
