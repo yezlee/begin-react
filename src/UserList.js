@@ -1,9 +1,46 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 // 하나의 파일안에 여러개의 컴포넌트가 들어가도 상관없다.
 
 function User({ user, onRemove, onToggle }) {
   const { username, email, id, active } = user;
+  useEffect(() => {
+    console.log("user 값이 설정됨");
+    console.log(user);
+    return () => {
+      console.log("user 값이 바뀌기 전");
+      console.log(user);
+    };
+  }, [user]); // 이렇게 하면 user값이 설정될때마다 즉 렌더링 되거나(마운팅되거나) 변경(업데이트)되거나 변화가 있은 직후에 실행이 된다.
+  // 또, 만약에 useEffect에 등록된 함수에서 props로 받아온 값을 참조하거나 useState로 관리하고 있는 값을 참조한다면 deps 배열에 꼭 넣어주어야 한다. 안 넣어도 오류가 나거나 그러지는 않는데, 경고가 나타날 수 있음
+  // 넣어주어야지 첫번째 파라미터에서 사용한 user가 최신 값을 가리키게 된다.
+  /*
+    console.log("컴포넌트가 화면에 나타남");
+    // 컴포넌트가 마운트 될때 주로 추가하는 작업이 뭐가 있냐면,
+    // props -> state 예를 들어 props로 받은 값을 컴포넌트의 state로 설정
+    // RESE API 외부API요청하게 될때도, 컴포넌트가 외부 요청?할때도
+    // D3, Video.js 혹은 라이브러리를 사용할 때도
+    // setInterval, setTimeout
+    return () => {
+      // 컴포넌트가 사라질때 특정작업을 하고싶으면 심플하게 그냥 반납 해주면됨. 즉 리턴. 함수를 반환해 주면된다.
+      // clearInterval, clearTimeout
+      // 라이브러리 인스턴스 제거
+      // cleaner함수들이 뒷정리 함수라고 생각해면 된다.
+      console.log("컴포넌트가 화면에서 사라짐");
+    };
+  }, []);
+  // useEffect는 리액트 컴포넌트가 렌더링 될 때마다(마운팅 될 때마다 =  화면에 나타날때마다) 특정 작업을 수행하도록 설정할 수 있는 Hook이다.
+  // 만약 useEffect에서 설정한 함수를 컴포넌트가 화면에 맨 처음 렌더링 될때만 사용하고 싶으면 두번째 파라미터에는 비어있는 배열을 넣어주면 된다. - 두번째 파라미터에는 deps라는 배열을 넣는데 deps는 dependency의 약자임 - 의존되는 값들을 넣어주면 된다. 근데 그 의존되는 값이 비어있다 하면 컴포넌트가 처음 화면에 나타날때만 실행이 된다.
+
+
+  정리 : useEffect 첫번째 파라미터에서는 함수를 넣고, 두번째 파라미터에선 deps라는 배열을 넣는다.
+  어떤 함수를 return을 통해 반환하게 되면 이게 뒷정리 함수(cleaner) 라고해서 업데이트되기 바로 직전에 먼저 호출된다.
+  그리고 조회하고 있는 값, 상태가 있다면 두번째 파라미터에 넣어줘야하는게 규칙이다. 
+  만약 두번째 파라미터가 비어있다면 처음 마운트할때만 호출이 됨
+
+
+  */
+
   return (
     <div>
       <b
