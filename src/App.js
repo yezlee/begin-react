@@ -1,6 +1,11 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useMemo } from "react";
 import CreateUser from "./CreateUser";
 import UserList from "./UserList";
+
+function countActiveUsers(users) {
+  console.log("활성 사용자 수를 세는 중..");
+  return users.filter((user) => user.active).length;
+}
 
 // 복습 :
 // 배열안에 있는 값을 추가하거나 제거, 수정해야할 때
@@ -86,9 +91,14 @@ function App() {
       )
     );
   };
-  // 이렇게 배열안에 이쓴ㄴ 원소를 업데이트 할 때는 map함수를 사용해서 구현할 수 있다
+  // 이렇게 배열안에 있는 원소를 업데이트 할 때는 map함수를 사용해서 구현할 수 있다
   // 또 특정 객체를 업데이트 할 때도, { ...user, active: !user.active } 이렇게 기존의 유저를 수정하는게 아니라 새로운 객체를 만드는거!!! 만들어서 원래 기존에 user가 갖고있던 값을 넣어주고  {...user}, 나서 특정 값을 덮어 씌워 주는 형태로 active: !user.active - 이렇게!
   // 이게 불변성을 유지하는 거야.
+
+  const count = useMemo(() => countActiveUsers(users), [users]);
+  // useEffect랑 같이 두번째 파라미터에는 deps라는 배열을 넣어줌.
+  // [] 안에 들어오는 애가 실행될때 useMemo를 사용하겠다. 라는 것이 useMemo의 특성
+
   return (
     <>
       <CreateUser
@@ -99,6 +109,7 @@ function App() {
       />
       <UserList users={users} onRemove={onRemove} onToggle={onToggle} />
       {/* 이렇게 하면 위에 적은 배열 users를 - useState()로 추출함(users 도 useState 를 사용하여 컴포넌트의 상태로서 관리해주세요.) - UserList 컴포넌트에 전달하는 것임 */}
+      <div>활성 사용자 수 : {count}</div>
     </>
   );
 }
